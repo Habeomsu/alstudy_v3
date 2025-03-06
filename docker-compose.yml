@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./db/store:/var/lib/mysql
+    networks:
+      - network
+
+  alstudy-back:
+    build:
+      context: ./alstudy_back
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    restart: always
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      AWS_EC2_IP: ${AWS_EC2_IP}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+    depends_on:
+      - mysql
+    networks:
+      - network
+
+  alstudy-front:
+    build:
+      context: ./alstudy_front
+    ports:
+      - '80:80' # React 앱은 3000번 포트에서 실행
+    restart: always
+    environment:
+      REACT_APP_WS_HOST: ${REACT_APP_WS_HOST}
+    depends_on:
+      - alstudy-back
+    networks:
+      - network
+
+  flask-api:
+    build:
+      context: ./GradePython # Flask 애플리케이션 디렉토리 경로
+      dockerfile: Dockerfile # Flask 애플리케이션용 Dockerfile
+    ports:
+      - '5001:5001' # Flask는 5001번 포트를 사용
+    restart: always
+    environment:
+      FLASK_APP: app
+      FLASK_DEBUG: 'True'
+    depends_on:
+      - mysql
+    networks:
+      - network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - '15672:15672' # RabbitMQ 관리 콘솔 포트
+      - '5672:5672' # AMQP 프로토콜 포트
+      - '61613:61613' # STOMP 프로토콜 포트
+    networks:
+      - network
+    depends_on:
+      - alstudy-back
+    command: >
+      sh -c "rabbitmq-plugins enable rabbitmq_stomp &&
+             rabbitmq-server"
+networks:
+  network:

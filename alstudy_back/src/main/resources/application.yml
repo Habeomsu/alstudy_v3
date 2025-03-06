@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DATABASE_URL}:3306/algorithm?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update #create,update,none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+
+rabbitmq:
+  host: ${AWS_EC2_IP}
+  user: ${RABBITMQ_USER}
+  password: ${RABBITMQ_PASSWORD}
+server:
+  port: 8080
+  address: 0.0.0.0
+
+springdoc:
+  show-login-endpoint: true
+
+cloud:
+  aws:
+    s3:
+      bucket: algorithmstudy
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+
+

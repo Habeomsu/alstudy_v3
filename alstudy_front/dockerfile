@@ -1,0 +1,25 @@
+# 1단계: 빌드 단계
+FROM node:16 as build
+
+WORKDIR /app
+
+# 의존성 설치
+COPY package*.json ./
+RUN npm install
+
+# React 앱 복사
+COPY . .
+
+# 앱 빌드
+RUN npm run build
+
+# 2단계: Nginx 컨테이너에서 빌드된 정적 파일 서빙
+FROM nginx:latest
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Nginx의 기본 html 폴더에 React 앱 빌드된 파일을 복사
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Nginx의 포트 80을 외부에 노출
+EXPOSE 80

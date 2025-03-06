@@ -1,0 +1,22 @@
+# 1. Python 3.9 기반 이미지를 사용
+FROM python:3.9-slim
+
+# 2. 작업 디렉토리 설정
+WORKDIR /app
+
+# 3. 의존성 파일을 복사하고 의존성 설치
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 4. Flask 애플리케이션 코드 복사
+COPY . /app/
+
+# 5. 환경 변수 설정
+ENV FLASK_APP=app
+ENV FLASK_DEBUG=True
+
+# 6. Flask 앱 실행 (0.0.0.0으로 바인딩하여 외부에서 접근 가능)
+CMD ["flask", "run", "-h", "0.0.0.0", "-p", "5001"]
+
+# 7. 외부에서 접근할 포트 노출
+EXPOSE 5001
