@@ -1,21 +1,6 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - '3306:3306'
-    volumes:
-      - ./db/store:/var/lib/mysql
-    networks:
-      - network
-
   alstudy-back:
     build:
       context: ./alstudy_back
@@ -34,8 +19,6 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
 
-    depends_on:
-      - mysql
     networks:
       - network
 
@@ -62,8 +45,6 @@ services:
     environment:
       FLASK_APP: app
       FLASK_DEBUG: 'True'
-    depends_on:
-      - mysql
     networks:
       - network
 
