@@ -1,0 +1,44 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and push backend image
+        run: |
+          docker build -t your-dockerhub-username/alstudy-back:latest ./alstudy_back
+          docker push your-dockerhub-username/alstudy-back:latest
+
+      - name: Build and push frontend image
+        run: |
+          docker build -t your-dockerhub-username/alstudy-front:latest ./alstudy_front
+          docker push your-dockerhub-username/alstudy-front:latest
+
+      - name: Build and push Flask API image
+        run: |
+          docker build -t your-dockerhub-username/flask-api:latest ./GradePython
+          docker push your-dockerhub-username/flask-api:latest
+
+      - name: SSH into server and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.AWS_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/your-project-directory
+            docker-compose pull
+            docker-compose up -d --build
+            docker system prune -af
