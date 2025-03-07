@@ -13,7 +13,7 @@ spring:
     secret: ${JWT_SECRET_KEY}
 
 rabbitmq:
-  host: ${AWS_EC2_IP}
+  host: ${RABBITMQ_HOST}
   user: ${RABBITMQ_USER}
   password: ${RABBITMQ_PASSWORD}
 server:
@@ -34,5 +34,3 @@ cloud:
     credentials:
       accessKey: ${AWS_ACCESS_KEY_ID}
       secretKey: ${AWS_SECRET_ACCESS_KEY}
-
-
