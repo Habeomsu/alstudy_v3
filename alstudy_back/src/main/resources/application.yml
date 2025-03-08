@@ -1,13 +1,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DATABASE_URL}:3306/alstudy?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${DATABASE_URL}:3306/${DATABASE_NAME}?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update # create, update, none
-      dialect: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: update #create,update,none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   jwt:
